@@ -1,0 +1,83 @@
+[
+  {
+    "job_id": "1",
+    "job_title": "React Developer",
+    "employer_name": "TechCorp India",
+    "job_city": "Bangalore",
+    "job_is_remote": true,
+    "job_employment_type": "FULLTIME",
+    "job_description": "We are looking for a React Developer with 2+ years of experience in React hooks, Redux, REST APIs, and responsive UI design. Experience with TypeScript is a plus.",
+    "job_apply_link": "https://example.com/apply/1"
+  },
+  {
+    "job_id": "2",
+    "job_title": "Node.js Backend Engineer",
+    "employer_name": "StartupXYZ",
+    "job_city": "Mumbai",
+    "job_is_remote": false,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Looking for a Node.js engineer with strong knowledge of Express or Fastify, MongoDB, REST API design, and JWT authentication.",
+    "job_apply_link": "https://example.com/apply/2"
+  },
+  {
+    "job_id": "3",
+    "job_title": "Python ML Engineer",
+    "employer_name": "AI Solutions Ltd",
+    "job_city": "Hyderabad",
+    "job_is_remote": true,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Seeking a Machine Learning Engineer with expertise in Python, TensorFlow, PyTorch, and model deployment using FastAPI or Flask.",
+    "job_apply_link": "https://example.com/apply/3"
+  },
+  {
+    "job_id": "4",
+    "job_title": "Frontend Developer Intern",
+    "employer_name": "WebAgency Co",
+    "job_city": "Chennai",
+    "job_is_remote": true,
+    "job_employment_type": "INTERN",
+    "job_description": "Internship for frontend developer comfortable with HTML, CSS, JavaScript, and basic React. Portfolio projects required.",
+    "job_apply_link": "https://example.com/apply/4"
+  },
+  {
+    "job_id": "5",
+    "job_title": "Full Stack Developer",
+    "employer_name": "DevHouse",
+    "job_city": "Pune",
+    "job_is_remote": false,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Full stack developer needed with React on frontend and Node.js/Express on backend. Must know SQL and NoSQL databases.",
+    "job_apply_link": "https://example.com/apply/5"
+  },
+  {
+    "job_id": "6",
+    "job_title": "DevOps Engineer",
+    "employer_name": "CloudFirst",
+    "job_city": "Delhi",
+    "job_is_remote": true,
+    "job_employment_type": "CONTRACT",
+    "job_description": "Contract DevOps role requiring AWS, Docker, Kubernetes, CI/CD pipelines, and Linux administration skills.",
+    "job_apply_link": "https://example.com/apply/6"
+  },
+  {
+    "job_id": "7",
+    "job_title": "React Native Developer",
+    "employer_name": "MobileApps Inc",
+    "job_city": "Bangalore",
+    "job_is_remote": true,
+    "job_employment_type": "PARTTIME",
+    "job_description": "Part-time React Native developer to build cross-platform mobile apps. Must know React, Redux, and native device APIs.",
+    "job_apply_link": "https://example.com/apply/7"
+  },
+  {
+    "job_id": "8",
+    "job_title": "Data Analyst",
+    "employer_name": "DataCo",
+    "job_city": "Mumbai",
+    "job_is_remote": false,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Data analyst role requiring Python, SQL, Excel, Power BI or Tableau, and experience with large datasets.",
+    "job_apply_link": "https://example.com/apply/8"
+  }
+]
+
