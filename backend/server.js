@@ -13,7 +13,7 @@ fastify.register(require('./routes/applications'))
 
 const start = async () => {
   try {
-    await fastify.listen({ port: process.env.PORT || 3001 })
+    await fastify.listen({ port: process.env.PORT || 3001, host: '0.0.0.0' })
     console.log('Backend running on http://localhost:3001')
   } catch (err) {
     console.error(err)
