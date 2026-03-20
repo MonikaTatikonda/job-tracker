@@ -4,18 +4,19 @@ const { scoreJob } = require('../services/matcher')
 module.exports = async (fastify) => {
 
   fastify.get('/api/jobs', async (req, reply) => {
-    const { title, type, remote, location } = req.query
+    const { title, type, remote } = req.query
 
     try {
-      const query = title || 'software developer'
+      const query = title || 'software developer india'
       const response = await axios.get(
         'https://jsearch.p.rapidapi.com/search',
         {
           params: {
             query: query,
             page: '1',
-            num_pages: '1',
-            date_posted: 'all'
+            num_pages: '2',
+            date_posted: 'all',
+            remote_jobs_only: remote === 'true' ? 'true' : undefined
           },
           headers: {
             'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
@@ -26,25 +27,21 @@ module.exports = async (fastify) => {
 
       let jobs = response.data.data || []
 
-      // Filter by job type if provided
       if (type) {
         jobs = jobs.filter(j =>
           j.job_employment_type?.toUpperCase() === type.toUpperCase()
         )
       }
 
-      // Filter by remote if provided
-      if (remote === 'true') {
-        jobs = jobs.filter(j => j.job_is_remote === true)
-      } else if (remote === 'false') {
-        jobs = jobs.filter(j => j.job_is_remote === false)
+      if (jobs.length === 0) {
+        const localJobs = require('../data/jobs.json')
+        return localJobs
       }
 
       return jobs
 
     } catch (err) {
       console.error('RapidAPI error:', err.message)
-      // Fallback to local jobs if API fails
       const localJobs = require('../data/jobs.json')
       return localJobs
     }
@@ -68,3 +65,4 @@ module.exports = async (fastify) => {
     return scored.sort((a, b) => b.matchScore - a.matchScore)
   })
 }
+
