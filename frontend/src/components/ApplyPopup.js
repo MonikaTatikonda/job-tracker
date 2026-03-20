@@ -3,7 +3,7 @@ import axios from 'axios'
 export default function ApplyPopup({ job, onClose }) {
   const respond = async (status) => {
     if (status !== 'browsing') {
-      await axios.post('http://localhost:3001/api/applications', { job, status })
+      await axios.post('https://job-tracker-7fch.onrender.com/api/applications', { job, status })
     }
     onClose()
   }

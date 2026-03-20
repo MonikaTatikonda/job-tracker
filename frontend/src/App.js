@@ -30,11 +30,11 @@ export default function App() {
       if (filters.type) params.type = filters.type
       if (filters.remote) params.remote = filters.remote
 
-      const res = await axios.get('http://localhost:3001/api/jobs', { params })
+      const res = await axios.get('https://job-tracker-7fch.onrender.com/api/jobs', { params })
       let jobList = res.data
 
       if (resume) {
-        const scored = await axios.post('http://localhost:3001/api/jobs/score', {
+        const scored = await axios.post('https://job-tracker-7fch.onrender.com/api/jobs/score', {
           jobs: jobList, resume
         })
         jobList = scored.data

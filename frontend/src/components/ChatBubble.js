@@ -17,7 +17,7 @@ export default function ChatBubble({ onFilterUpdate }) {
     setLoading(true)
 
     try {
-      const res = await axios.post('http://localhost:3001/api/chat', { message: userMsg })
+      const res = await axios.post('https://job-tracker-7fch.onrender.com/api/chat', { message: userMsg })
       setMessages(m => [...m, { from: 'ai', text: res.data.reply }])
       if (res.data.action === 'filter' && res.data.filters) {
         onFilterUpdate(res.data.filters)
