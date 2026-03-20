@@ -1,28 +1,53 @@
-const allJobs = require('../data/jobs.json')
+const axios = require('axios')
 const { scoreJob } = require('../services/matcher')
-
-let resumeText = ''
 
 module.exports = async (fastify) => {
 
   fastify.get('/api/jobs', async (req, reply) => {
-    const { title, type, remote } = req.query
-    let filtered = [...allJobs]
+    const { title, type, remote, location } = req.query
 
-    if (title) {
-      filtered = filtered.filter(j =>
-        j.job_title.toLowerCase().includes(title.toLowerCase()) ||
-        j.job_description.toLowerCase().includes(title.toLowerCase())
+    try {
+      const query = title || 'software developer'
+      const response = await axios.get(
+        'https://jsearch.p.rapidapi.com/search',
+        {
+          params: {
+            query: query,
+            page: '1',
+            num_pages: '1',
+            date_posted: 'all'
+          },
+          headers: {
+            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+            'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
+          }
+        }
       )
-    }
-    if (type) {
-      filtered = filtered.filter(j => j.job_employment_type === type)
-    }
-    if (remote === 'true') {
-      filtered = filtered.filter(j => j.job_is_remote === true)
-    }
 
-    return filtered
+      let jobs = response.data.data || []
+
+      // Filter by job type if provided
+      if (type) {
+        jobs = jobs.filter(j =>
+          j.job_employment_type?.toUpperCase() === type.toUpperCase()
+        )
+      }
+
+      // Filter by remote if provided
+      if (remote === 'true') {
+        jobs = jobs.filter(j => j.job_is_remote === true)
+      } else if (remote === 'false') {
+        jobs = jobs.filter(j => j.job_is_remote === false)
+      }
+
+      return jobs
+
+    } catch (err) {
+      console.error('RapidAPI error:', err.message)
+      // Fallback to local jobs if API fails
+      const localJobs = require('../data/jobs.json')
+      return localJobs
+    }
   })
 
   fastify.post('/api/jobs/score', async (req, reply) => {
