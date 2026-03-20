@@ -16,7 +16,7 @@
     "job_city": "Mumbai",
     "job_is_remote": false,
     "job_employment_type": "FULLTIME",
-    "job_description": "Looking for a Node.js engineer with strong knowledge of Express or Fastify, MongoDB, REST API design, and JWT authentication.",
+    "job_description": "Looking for a Node.js engineer with strong knowledge of Express or Fastify, MongoDB, REST API design, and JWT authentication. Experience with microservices is a plus.",
     "job_apply_link": "https://example.com/apply/2"
   },
   {
@@ -26,7 +26,7 @@
     "job_city": "Hyderabad",
     "job_is_remote": true,
     "job_employment_type": "FULLTIME",
-    "job_description": "Seeking a Machine Learning Engineer with expertise in Python, TensorFlow, PyTorch, and model deployment using FastAPI or Flask.",
+    "job_description": "Seeking a Machine Learning Engineer with expertise in Python, TensorFlow, PyTorch, scikit-learn, and model deployment using FastAPI or Flask. Experience with NLP is preferred.",
     "job_apply_link": "https://example.com/apply/3"
   },
   {
@@ -36,27 +36,27 @@
     "job_city": "Chennai",
     "job_is_remote": true,
     "job_employment_type": "INTERN",
-    "job_description": "Internship for frontend developer comfortable with HTML, CSS, JavaScript, and basic React. Portfolio projects required.",
+    "job_description": "Internship for frontend developer comfortable with HTML, CSS, JavaScript, and basic React. Must have portfolio projects. Good understanding of responsive design required.",
     "job_apply_link": "https://example.com/apply/4"
   },
   {
     "job_id": "5",
     "job_title": "Full Stack Developer",
-    "employer_name": "DevHouse",
+    "employer_name": "DevHouse Technologies",
     "job_city": "Pune",
     "job_is_remote": false,
     "job_employment_type": "FULLTIME",
-    "job_description": "Full stack developer needed with React on frontend and Node.js/Express on backend. Must know SQL and NoSQL databases.",
+    "job_description": "Full stack developer needed with React on frontend and Node.js on backend. Must know SQL and NoSQL databases, Docker, and REST API development.",
     "job_apply_link": "https://example.com/apply/5"
   },
   {
     "job_id": "6",
     "job_title": "DevOps Engineer",
-    "employer_name": "CloudFirst",
+    "employer_name": "CloudFirst Systems",
     "job_city": "Delhi",
     "job_is_remote": true,
     "job_employment_type": "CONTRACT",
-    "job_description": "Contract DevOps role requiring AWS, Docker, Kubernetes, CI/CD pipelines, and Linux administration skills.",
+    "job_description": "Contract DevOps role requiring AWS, Docker, Kubernetes, CI/CD pipelines using Jenkins or GitHub Actions, and Linux administration skills.",
     "job_apply_link": "https://example.com/apply/6"
   },
   {
@@ -66,18 +66,88 @@
     "job_city": "Bangalore",
     "job_is_remote": true,
     "job_employment_type": "PARTTIME",
-    "job_description": "Part-time React Native developer to build cross-platform mobile apps. Must know React, Redux, and native device APIs.",
+    "job_description": "Part-time React Native developer to build cross-platform mobile apps for iOS and Android. Must know React, Redux, REST APIs, and native device APIs.",
     "job_apply_link": "https://example.com/apply/7"
   },
   {
     "job_id": "8",
     "job_title": "Data Analyst",
-    "employer_name": "DataCo",
+    "employer_name": "DataCo Analytics",
     "job_city": "Mumbai",
     "job_is_remote": false,
     "job_employment_type": "FULLTIME",
-    "job_description": "Data analyst role requiring Python, SQL, Excel, Power BI or Tableau, and experience with large datasets.",
+    "job_description": "Data analyst role requiring Python, SQL, Excel, Power BI or Tableau. Experience working with large datasets and creating dashboards for business insights.",
     "job_apply_link": "https://example.com/apply/8"
+  },
+  {
+    "job_id": "9",
+    "job_title": "UI/UX Designer",
+    "employer_name": "DesignStudio",
+    "job_city": "Hyderabad",
+    "job_is_remote": true,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Looking for a UI/UX designer with strong skills in Figma, Adobe XD, user research, wireframing, and prototyping. Experience with design systems is a plus.",
+    "job_apply_link": "https://example.com/apply/9"
+  },
+  {
+    "job_id": "10",
+    "job_title": "Java Spring Boot Developer",
+    "employer_name": "EnterpriseIT Solutions",
+    "job_city": "Chennai",
+    "job_is_remote": false,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Java developer with Spring Boot, Hibernate, Microservices, REST APIs, and MySQL experience. Knowledge of AWS deployment and Docker containers preferred.",
+    "job_apply_link": "https://example.com/apply/10"
+  },
+  {
+    "job_id": "11",
+    "job_title": "TypeScript React Developer",
+    "employer_name": "FinTech Startup",
+    "job_city": "Bangalore",
+    "job_is_remote": true,
+    "job_employment_type": "FULLTIME",
+    "job_description": "We need a TypeScript and React developer for our fintech platform. Must know React, TypeScript, Redux Toolkit, REST APIs, and unit testing with Jest.",
+    "job_apply_link": "https://example.com/apply/11"
+  },
+  {
+    "job_id": "12",
+    "job_title": "Backend Developer - Python",
+    "employer_name": "HealthTech India",
+    "job_city": "Pune",
+    "job_is_remote": true,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Backend Python developer needed for healthcare platform. Skills required: Python, Django or FastAPI, PostgreSQL, Redis, Docker, and REST API design.",
+    "job_apply_link": "https://example.com/apply/12"
+  },
+  {
+    "job_id": "13",
+    "job_title": "Cloud Engineer - AWS",
+    "employer_name": "CloudNative Co",
+    "job_city": "Delhi",
+    "job_is_remote": true,
+    "job_employment_type": "CONTRACT",
+    "job_description": "AWS cloud engineer for infrastructure management. Must know EC2, S3, Lambda, RDS, CloudFormation, Terraform, and CI/CD pipelines.",
+    "job_apply_link": "https://example.com/apply/13"
+  },
+  {
+    "job_id": "14",
+    "job_title": "Angular Developer",
+    "employer_name": "TechMahindra",
+    "job_city": "Mumbai",
+    "job_is_remote": false,
+    "job_employment_type": "FULLTIME",
+    "job_description": "Angular developer with 3+ years experience in Angular 12+, TypeScript, RxJS, NgRx state management, and REST API integration.",
+    "job_apply_link": "https://example.com/apply/14"
+  },
+  {
+    "job_id": "15",
+    "job_title": "Software Engineer Intern",
+    "employer_name": "Infosys",
+    "job_city": "Bangalore",
+    "job_is_remote": false,
+    "job_employment_type": "INTERN",
+    "job_description": "Software engineering internship for final year students. Basic knowledge of any programming language, data structures, and algorithms required. Training provided.",
+    "job_apply_link": "https://example.com/apply/15"
   }
 ]
 
