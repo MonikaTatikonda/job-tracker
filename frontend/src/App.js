@@ -14,12 +14,54 @@ export default function App() {
     title: '', type: '', remote: '', matchScore: ''
   })
 
-  const handleResumeUpload = (e) => {
+  const handleResumeUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setResume(ev.target.result)
-    reader.readAsText(file)
+
+    // If file is TXT - read directly
+    if (file.type === 'text/plain') {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        setResume(ev.target.result)
+        alert('Resume uploaded successfully! Click Search to score jobs.')
+      }
+      reader.readAsText(file)
+      return
+    }
+
+    // If file is PDF - extract text using pdfjs
+    if (file.type === 'application/pdf') {
+      try {
+        const pdfjsLib = await import('pdfjs-dist')
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
+
+        const arrayBuffer = await file.arrayBuffer()
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+
+        let fullText = ''
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i)
+          const textContent = await page.getTextContent()
+          const pageText = textContent.items.map(item => item.str).join(' ')
+          fullText += pageText + '\n'
+        }
+
+        if (fullText.trim().length === 0) {
+          alert('Could not read text from your PDF. Please try a TXT file instead.')
+          return
+        }
+
+        setResume(fullText)
+        alert('PDF resume uploaded successfully! Click Search to score jobs.')
+      } catch (err) {
+        console.error('PDF reading error:', err)
+        alert('Error reading PDF. Please try a TXT file instead.')
+      }
+      return
+    }
+
+    alert('Please upload a PDF or TXT file only.')
   }
 
   const fetchAndScoreJobs = async () => {
@@ -33,11 +75,14 @@ export default function App() {
       const res = await axios.get('https://job-tracker-7fch.onrender.com/api/jobs', { params })
       let jobList = res.data
 
-      if (resume) {
+      if (resume && resume.length > 0) {
         const scored = await axios.post('https://job-tracker-7fch.onrender.com/api/jobs/score', {
-          jobs: jobList, resume
+          jobs: jobList,
+          resume: resume
         })
         jobList = scored.data
+      } else {
+        alert('Please upload your resume first then click Search!')
       }
 
       if (filters.matchScore) {
@@ -77,8 +122,8 @@ export default function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <label style={{ fontSize: 13, cursor: 'pointer', background: 'rgba(255,255,255,0.2)',
                           padding: '6px 12px', borderRadius: 6 }}>
-            {resume ? 'Resume uploaded ✓' : 'Upload Resume (TXT)'}
-            <input type="file" accept=".txt" onChange={handleResumeUpload} style={{ display: 'none' }} />
+            {resume ? '✅ Resume Ready - Click Search!' : '📄 Upload Resume (PDF or TXT)'}
+            <input type="file" accept=".txt,.pdf" onChange={handleResumeUpload} style={{ display: 'none' }} />
           </label>
           <button onClick={fetchAndScoreJobs}
             style={{ background: '#fff', color: '#2563eb', border: 'none',
@@ -115,3 +160,4 @@ export default function App() {
     </div>
   )
 }
+
