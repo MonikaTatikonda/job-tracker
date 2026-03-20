@@ -29,10 +29,15 @@ export default function App() {
       return
     }
 
-    // If file is PDF - extract text using pdfjs
+    // If file is PDF - use window.pdfjsLib from CDN
     if (file.type === 'application/pdf') {
       try {
-        const pdfjsLib = await import('pdfjs-dist')
+        const pdfjsLib = window['pdfjs-dist/build/pdf']
+
+        if (!pdfjsLib) {
+          throw new Error('PDF library not loaded')
+        }
+
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
 
         const arrayBuffer = await file.arrayBuffer()
@@ -48,15 +53,23 @@ export default function App() {
         }
 
         if (fullText.trim().length === 0) {
-          alert('Could not read text from your PDF. Please try a TXT file instead.')
+          alert('Could not read text from PDF. Please try a TXT file instead.')
           return
         }
 
         setResume(fullText)
-        alert('PDF resume uploaded successfully! Click Search to score jobs.')
+        alert('PDF resume uploaded! Click Search to score jobs.')
+
       } catch (err) {
-        console.error('PDF reading error:', err)
-        alert('Error reading PDF. Please try a TXT file instead.')
+        console.error('PDF error:', err)
+
+        // Fallback - read as binary text anyway
+        const reader = new FileReader()
+        reader.onload = (ev) => {
+          setResume(ev.target.result)
+          alert('Resume uploaded! Click Search to score jobs.')
+        }
+        reader.readAsText(file)
       }
       return
     }
@@ -83,6 +96,8 @@ export default function App() {
         jobList = scored.data
       } else {
         alert('Please upload your resume first then click Search!')
+        setLoading(false)
+        return
       }
 
       if (filters.matchScore) {
@@ -92,11 +107,24 @@ export default function App() {
       setJobs(jobList)
     } catch (err) {
       console.error('Error fetching jobs:', err)
+      alert('Error loading jobs. Please try again.')
     }
     setLoading(false)
   }
 
-  useEffect(() => { fetchAndScoreJobs() }, [])
+  useEffect(() => {
+    const loadJobs = async () => {
+      setLoading(true)
+      try {
+        const res = await axios.get('https://job-tracker-7fch.onrender.com/api/jobs')
+        setJobs(res.data)
+      } catch (err) {
+        console.error('Error loading jobs:', err)
+      }
+      setLoading(false)
+    }
+    loadJobs()
+  }, [])
 
   const handleApply = (job) => {
     window.open(job.job_apply_link, '_blank')
@@ -137,11 +165,15 @@ export default function App() {
         <Filters filters={filters} onChange={setFilters} />
 
         <div style={{ flex: 1, padding: 20 }}>
-          {loading && <p style={{ color: '#888' }}>Loading and scoring jobs...</p>}
+          {loading && (
+            <p style={{ color: '#888' }}>Loading and scoring jobs...</p>
+          )}
 
-          {bestMatches.length > 0 && (
+          {!loading && resume && bestMatches.length > 0 && (
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ color: '#2563eb', marginTop: 0 }}>Best Matches ({bestMatches.length})</h3>
+              <h3 style={{ color: '#2563eb', marginTop: 0 }}>
+                Best Matches ({bestMatches.length})
+              </h3>
               {bestMatches.slice(0, 6).map(job => (
                 <JobCard key={job.job_id} job={job} onApply={handleApply} />
               ))}
@@ -152,12 +184,19 @@ export default function App() {
           {jobs.map(job => (
             <JobCard key={job.job_id} job={job} onApply={handleApply} />
           ))}
+
+          {!loading && jobs.length === 0 && (
+            <p style={{ color: '#888', textAlign: 'center', marginTop: 40 }}>
+              No jobs found. Try adjusting your filters.
+            </p>
+          )}
         </div>
       </div>
 
-      {pendingJob && <ApplyPopup job={pendingJob} onClose={() => setPendingJob(null)} />}
+      {pendingJob && (
+        <ApplyPopup job={pendingJob} onClose={() => setPendingJob(null)} />
+      )}
       <ChatBubble onFilterUpdate={handleFilterUpdate} />
     </div>
   )
 }
-
