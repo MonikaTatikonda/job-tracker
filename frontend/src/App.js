@@ -10,9 +10,12 @@ export default function App() {
   const [resume, setResume] = useState('')
   const [pendingJob, setPendingJob] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState({
     title: '', type: '', remote: '', matchScore: '', location: '', skills: []
   })
+
+  const isMobile = window.innerWidth <= 768
 
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0]
@@ -31,35 +34,24 @@ export default function App() {
     if (file.type === 'application/pdf') {
       try {
         const pdfjsLib = window['pdfjs-dist/build/pdf']
-
-        if (!pdfjsLib) {
-          throw new Error('PDF library not loaded')
-        }
-
+        if (!pdfjsLib) throw new Error('PDF library not loaded')
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
-
         const arrayBuffer = await file.arrayBuffer()
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
-
         let fullText = ''
-
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i)
           const textContent = await page.getTextContent()
           const pageText = textContent.items.map(item => item.str).join(' ')
           fullText += pageText + '\n'
         }
-
         if (fullText.trim().length === 0) {
-          alert('Could not read text from PDF. Please try a TXT file instead.')
+          alert('Could not read PDF. Please try a TXT file.')
           return
         }
-
         setResume(fullText)
-        alert('PDF resume uploaded! Click Search to score jobs.')
-
+        alert('PDF uploaded! Click Search to score jobs.')
       } catch (err) {
-        console.error('PDF error:', err)
         const reader = new FileReader()
         reader.onload = (ev) => {
           setResume(ev.target.result)
@@ -75,10 +67,9 @@ export default function App() {
 
   const fetchAndScoreJobs = async () => {
     setLoading(true)
+    setShowFilters(false)
     try {
       const params = {}
-
-      // Build search query combining title + skills + location
       let searchQuery = filters.title || ''
       if (filters.skills && filters.skills.length > 0) {
         searchQuery = `${searchQuery} ${filters.skills.join(' ')}`.trim()
@@ -87,7 +78,6 @@ export default function App() {
         searchQuery = `${searchQuery} ${filters.location}`.trim()
       }
       if (searchQuery) params.title = searchQuery
-
       if (filters.type) params.type = filters.type
       if (filters.remote) params.remote = filters.remote
 
@@ -112,7 +102,7 @@ export default function App() {
 
       setJobs(jobList)
     } catch (err) {
-      console.error('Error fetching jobs:', err)
+      console.error('Error:', err)
       alert('Error loading jobs. Please try again.')
     }
     setLoading(false)
@@ -154,40 +144,102 @@ export default function App() {
     <div style={{ fontFamily: 'sans-serif', minHeight: '100vh', background: '#f8f9fb' }}>
 
       {/* Header */}
-      <div style={{ background: '#2563eb', color: '#fff', padding: '16px 24px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ margin: 0, fontSize: 20 }}>AI Job Tracker</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <label style={{ fontSize: 13, cursor: 'pointer', background: 'rgba(255,255,255,0.2)',
-                          padding: '6px 12px', borderRadius: 6 }}>
-            {resume ? '✅ Resume Ready - Click Search!' : '📄 Upload Resume (PDF or TXT)'}
-            <input type="file" accept=".txt,.pdf" onChange={handleResumeUpload}
-                   style={{ display: 'none' }} />
+      <div style={{
+        background: '#2563eb', color: '#fff',
+        padding: '12px 16px',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: 8
+      }}>
+        <h2 style={{ margin: 0, fontSize: 18 }}>AI Job Tracker</h2>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+
+          {/* Filter toggle button - only on mobile */}
+          <button onClick={() => setShowFilters(!showFilters)}
+            style={{
+              background: 'rgba(255,255,255,0.2)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.4)',
+              borderRadius: 6, padding: '6px 12px',
+              fontSize: 13, cursor: 'pointer',
+              display: isMobile ? 'block' : 'none'
+            }}>
+            {showFilters ? 'Hide Filters' : 'Filters'}
+          </button>
+
+          <label style={{
+            fontSize: 12, cursor: 'pointer',
+            background: 'rgba(255,255,255,0.2)',
+            padding: '6px 10px', borderRadius: 6,
+            whiteSpace: 'nowrap'
+          }}>
+            {resume ? '✅ Resume Ready' : '📄 Upload Resume'}
+            <input type="file" accept=".txt,.pdf"
+              onChange={handleResumeUpload}
+              style={{ display: 'none' }} />
           </label>
+
           <button onClick={fetchAndScoreJobs}
-            style={{ background: '#fff', color: '#2563eb', border: 'none',
-                     borderRadius: 6, padding: '6px 16px', fontWeight: 600, cursor: 'pointer' }}>
-            Search
+            disabled={loading}
+            style={{
+              background: loading ? '#93c5fd' : '#fff',
+              color: loading ? '#fff' : '#2563eb',
+              border: 'none', borderRadius: 6,
+              padding: '6px 14px', fontWeight: 600,
+              fontSize: 13, cursor: loading ? 'not-allowed' : 'pointer',
+              whiteSpace: 'nowrap'
+            }}>
+            {loading ? 'Scoring...' : 'Search'}
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'flex' }}>
-        <Filters filters={filters} onChange={setFilters} />
+      {/* Main layout */}
+      <div style={{
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        minHeight: 'calc(100vh - 56px)'
+      }}>
 
-        <div style={{ flex: 1, padding: 20 }}>
+        {/* Filters sidebar */}
+        <div style={{
+          width: isMobile ? '100%' : 240,
+          display: isMobile ? (showFilters ? 'block' : 'none') : 'block',
+          borderRight: isMobile ? 'none' : '1px solid #eee',
+          borderBottom: isMobile ? '1px solid #eee' : 'none',
+          background: '#fafafa',
+          flexShrink: 0
+        }}>
+          <Filters filters={filters} onChange={setFilters} />
+        </div>
+
+        {/* Jobs list */}
+        <div style={{ flex: 1, padding: isMobile ? 12 : 20 }}>
+
           {loading && (
-            <p style={{ color: '#888' }}>Loading and scoring jobs...</p>
+            <div style={{ textAlign: 'center', padding: 40 }}>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+              <p style={{ color: '#2563eb', fontWeight: 500 }}>
+                AI is scoring jobs against your resume...
+              </p>
+              <p style={{ color: '#888', fontSize: 13 }}>
+                This takes 30-60 seconds. Please wait.
+              </p>
+            </div>
           )}
 
-          {/* Best Matches Section */}
           {!loading && resume && bestMatches.length > 0 && (
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ color: '#2563eb', marginTop: 0, display: 'flex',
-                           alignItems: 'center', gap: 8 }}>
+              <h3 style={{
+                color: '#2563eb', marginTop: 0,
+                fontSize: isMobile ? 15 : 18,
+                display: 'flex', alignItems: 'center', gap: 8
+              }}>
                 ⭐ Best Matches
-                <span style={{ background: '#2563eb', color: '#fff', borderRadius: 20,
-                               padding: '2px 10px', fontSize: 13 }}>
+                <span style={{
+                  background: '#2563eb', color: '#fff',
+                  borderRadius: 20, padding: '2px 10px', fontSize: 13
+                }}>
                   {bestMatches.length}
                 </span>
               </h3>
@@ -198,11 +250,15 @@ export default function App() {
             </div>
           )}
 
-          {/* All Jobs Section */}
-          <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{
+            marginTop: 0, fontSize: isMobile ? 15 : 18,
+            display: 'flex', alignItems: 'center', gap: 8
+          }}>
             All Jobs
-            <span style={{ background: '#f0f0f0', color: '#555', borderRadius: 20,
-                           padding: '2px 10px', fontSize: 13 }}>
+            <span style={{
+              background: '#f0f0f0', color: '#555',
+              borderRadius: 20, padding: '2px 10px', fontSize: 13
+            }}>
               {jobs.length}
             </span>
           </h3>
@@ -215,7 +271,7 @@ export default function App() {
             <div style={{ textAlign: 'center', marginTop: 60, color: '#888' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
               <p style={{ fontSize: 16 }}>No jobs found.</p>
-              <p style={{ fontSize: 13 }}>Try adjusting your filters or search terms.</p>
+              <p style={{ fontSize: 13 }}>Try adjusting your filters.</p>
             </div>
           )}
         </div>
