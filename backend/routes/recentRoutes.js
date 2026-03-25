@@ -1,57 +1,86 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
+const path = require("path");
 const authMiddleware = require("../services/authMiddleware");
 
-const FILE = "./data/recent.json";
+// ✅ Use absolute path (IMPORTANT for Render)
+const FILE = path.join(__dirname, "../data/recent.json");
 
-// Read data
+// ✅ Ensure file exists
+if (!fs.existsSync(FILE)) {
+  fs.writeFileSync(FILE, JSON.stringify([]));
+}
+
+// Read data safely
 const getRecent = () => {
-  return JSON.parse(fs.readFileSync(FILE));
+  try {
+    const data = fs.readFileSync(FILE, "utf-8");
+    return JSON.parse(data || "[]");
+  } catch (err) {
+    return [];
+  }
 };
 
-// Save data
+// Save data safely
 const saveRecent = (data) => {
   fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
 };
 
 
-// ✅ ADD RECENT JOB (when user views a job)
+// ✅ ADD RECENT JOB
 router.post("/", authMiddleware, (req, res) => {
-  const { jobId, title, company } = req.body;
-  const userId = req.user.id;
+  try {
+    const { jobId, title, company } = req.body;
+    const userId = req.user.id;
 
-  let data = getRecent();
+    let data = getRecent();
 
-  // Remove duplicate if already exists
-  data = data.filter(item => !(item.userId === userId && item.jobId === jobId));
+    // Remove duplicate for same user
+    data = data.filter(
+      item => !(item.userId === userId && item.jobId === jobId)
+    );
 
-  // Add new at top
-  data.unshift({
-    userId,
-    jobId,
-    title,
-    company,
-    viewedAt: new Date()
-  });
+    // Add new job
+    data.unshift({
+      userId,
+      jobId,
+      title,
+      company,
+      viewedAt: new Date()
+    });
 
-  // Keep only last 5 items
-  data = data.slice(0, 5);
+    // ✅ Keep only last 5 per user (FIXED)
+    const userItems = data.filter(item => item.userId === userId).slice(0, 5);
+    const otherItems = data.filter(item => item.userId !== userId);
 
-  saveRecent(data);
+    data = [...userItems, ...otherItems];
 
-  res.json({ message: "Added to recent" });
+    saveRecent(data);
+
+    res.json({ message: "Added to recent" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 
 // ✅ GET RECENT JOBS
 router.get("/", authMiddleware, (req, res) => {
-  const userId = req.user.id;
-  let data = getRecent();
+  try {
+    const userId = req.user.id;
+    let data = getRecent();
 
-  const userRecent = data.filter(item => item.userId === userId);
+    const userRecent = data
+      .filter(item => item.userId === userId)
+      .slice(0, 5); // extra safety
 
-  res.json(userRecent);
+    res.json(userRecent);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;
