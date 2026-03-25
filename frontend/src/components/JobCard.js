@@ -12,6 +12,25 @@ export default function JobCard({ job, onApply }) {
   const emojis = ['💼','⚡','🎯','🚀','☁️','🔥','💡','🛠️','🎨','📊']
   const emoji = emojis[Math.abs(job.job_id?.charCodeAt(0) || 0) % emojis.length]
 
+  const handleViewJob = async (job) => {
+  const token = localStorage.getItem("token");
+
+  await fetch("https://your-render-url.onrender.com/api/recent", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token
+    },
+    body: JSON.stringify({
+      jobId: job.id,
+      title: job.title,
+      company: job.company
+    })
+  });
+
+  // Navigate or open job
+};
+
   return (
     <div style={{
       background: '#fff',
@@ -132,5 +151,6 @@ export default function JobCard({ job, onApply }) {
         </button>
       </div>
     </div>
+
   )
 }

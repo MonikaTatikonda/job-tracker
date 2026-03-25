@@ -4,7 +4,9 @@ import JobCard from './components/JobCard'
 import Filters from './components/Filters'
 import ApplyPopup from './components/ApplyPopup'
 import ChatBubble from './components/ChatBubble'
+import RecentActivity from "./components/RecentActivity";
 
+<RecentActivity />
 export default function App() {
   const [jobs, setJobs] = useState([])
   const [resume, setResume] = useState('')
