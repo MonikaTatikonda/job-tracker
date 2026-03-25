@@ -20,8 +20,6 @@ const start = async () => {
     process.exit(1)
   }
 }
-const recentRoutes = require("./routes/recentRoutes");
 
-app.use("/api/recent", recentRoutes);
 
 start()
